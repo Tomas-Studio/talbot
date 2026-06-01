@@ -2,10 +2,16 @@
 const appconfig = useAppConfig()
 
 useHead({
-  htmlAttrs: { lang: 'en', class: 'font-gellix scroll-smooth' },
-  bodyAttrs: { class: 'antialiased font-gellix scroll-smooth' },
+  htmlAttrs: { lang: 'en', class: 'font-sans scroll-smooth' },
+  bodyAttrs: { class: 'antialiased font-sans scroll-smooth' },
   link: [{ rel: 'icon', type: 'image/png', href: '/th-favicon-32.png' }],
 })
+
+const { data } = await useSanityLiveQuery(siteSettingsQuery)
+
+const newAppConfig = { title: data.value?.siteTitle || appconfig.title, description: data.value?.aboutText || appconfig.description }
+
+updateAppConfig(newAppConfig)
 
 useSeoMeta({
   viewport: 'width=device-width, initial-scale=1, maximum-scale=1',

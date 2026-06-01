@@ -26,6 +26,19 @@ export default defineNuxtConfig({
     projectId: 'fxdkby6x',
     dataset: 'production',
     apiVersion: '2026-05-21',
+    liveContent: {
+      // Browser token is shipped to the client — give it Viewer scope only.
+      browserToken: process.env.NUXT_SANITY_LIVE_BROWSER_TOKEN,
+      // Server token stays on the Nitro server — Editor scope is fine.
+      serverToken: process.env.NUXT_SANITY_LIVE_SERVER_TOKEN,
+    },
+    typegen: {
+      enabled: true,
+      schemaTypesPath: '../studio/schemaTypes',
+      schemaTypesExport: 'schemaTypes',
+      overloadClientMethods: true,
+    },
+    // useCdn: false,
   },
 
   eslint: {
@@ -37,7 +50,7 @@ export default defineNuxtConfig({
   fonts: {
     families: [
       {
-        name: 'Hanken Grotesk',
+        name: 'DM Sans',
         provider: 'google',
         weights: [300, 400, 500, 600, 700, 800],
       },
