@@ -1,1 +1,7 @@
 @import "tailwindcss";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --font-youth: "Youth", sans-serif; 
+}

@@ -41,6 +41,12 @@ export default defineNuxtConfig({
         provider: 'google',
         weights: [300, 400, 500, 600, 700, 800],
       },
+      {
+        name: 'Youth',
+        src: ['/fonts/Youth-Bold.otf', '/fonts/Youth-Black.otf'],
+        weight: [700, 900],
+        style: 'normal',
+      },
     ]
   }
 })
