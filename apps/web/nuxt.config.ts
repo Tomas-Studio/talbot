@@ -60,6 +60,12 @@ export default defineNuxtConfig({
         weight: [700, 900],
         style: 'normal',
       },
+      {
+        name: 'Acorn',
+        src: ['/fonts/acorn.woff'],
+        weight: 600,
+        style: 'normal',
+      },
     ]
   }
 })
