@@ -18,6 +18,13 @@ export default defineNuxtConfig({
     plugins: [tailwindcss()],
   },
 
+  image: {
+    sanity: {
+      projectId: 'fxdkby6x',
+      dataset: 'production',
+    },
+  },
+
   devServer: {
     port: 4010
   },

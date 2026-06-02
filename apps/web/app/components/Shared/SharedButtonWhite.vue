@@ -3,5 +3,7 @@
 </script>
 
 <template>
-  <main />
+  <div>
+
+  </div>
 </template>

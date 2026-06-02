@@ -4,20 +4,15 @@ import {AnimatePresence, Motion} from 'motion-v'
 const appconfig = useAppConfig()
 useSeoMeta({title: `${appconfig.title}`, titleTemplate: null})
 
-// const {data: _site} = await useSanityLiveQuery(siteSettingsQuery)
-
 /**
- * Carousel slides. Hardcoded for now to mirror the reference. Swap to a
- * Sanity-driven query (service-offerings doc type) when that schema lands.
+ * Project categories drive the homepage carousel. Each category's
+ * `showcaseMedia` is either an image (rendered via <SanityImage> with an
+ * LQIP blur-up placeholder) or a video file (rendered via <SanityFile>).
+ * Ordered by the `order` field in the studio.
  */
-const slides = [
-  {title: 'Websites', image: '/carousel/slide-img-1.jpg'},
-  {title: 'Mobile Applications', image: '/carousel/slide-img-2.jpg'},
-  {title: 'Branding', image: '/carousel/slide-img-3.jpg'},
-  {title: 'Motion Design', image: '/carousel/slide-img-4.jpg'},
-  {title: 'Logos', image: '/carousel/slide-img-5.jpg'},
-  {title: 'Video Editing', image: '/carousel/slide-img-3.jpg'},
-]
+const {data: slides} = await useSanityLiveQuery(categoriesQuery)
+
+console.log(slides.value)
 
 const currentIndex = ref(0)
 const direction = ref<1 | -1>(1)
@@ -36,8 +31,10 @@ watch(currentIndex, () => {
   titleSettled.value = false
 })
 
-const currentSlide = computed(() => slides[currentIndex.value]!)
-const titleWords = computed(() => currentSlide.value.title.split(' '))
+// Null-safe view of the fetched categories for templates + index math.
+const slideList = computed(() => slides.value ?? [])
+const currentSlide = computed(() => slideList.value[currentIndex.value])
+const titleWords = computed(() => currentSlide.value?.title.split(' ') ?? [])
 
 /**
  * `offset` matches the GSAP reference: 500px desktop / 100px mobile. It
@@ -70,11 +67,11 @@ function stopAutoplay() {
 }
 
 function go(dir: 1 | -1) {
-  if (isAnimating.value) return
+  const count = slideList.value.length
+  if (isAnimating.value || count === 0) return
   isAnimating.value = true
   direction.value = dir
-  currentIndex.value
-    = (currentIndex.value + dir + slides.length) % slides.length
+  currentIndex.value = (currentIndex.value + dir + count) % count
   // Reset autoplay clock on any nav so manual interaction wins.
   startAutoplay()
 }
@@ -121,17 +118,14 @@ const imageVariants = {
 <template>
   <div class="bg-black text-white">
     <section class="relative w-full h-svh overflow-hidden">
-      <!--
-        mode="sync" so the outgoing and incoming images animate concurrently
-        (the reference shows both moving at the same time). Custom prop
-        threads `direction` through to the enter/exit variant fns.
-      -->
+
       <AnimatePresence
         :custom="direction"
         mode="sync"
         @exit-complete="isAnimating = false"
       >
         <Motion
+          v-if="currentSlide"
           :key="currentIndex"
           as="div"
           class="absolute inset-0 w-full h-full will-change-[clip-path,transform]"
@@ -142,27 +136,38 @@ const imageVariants = {
           exit="exit"
           :transition="{duration: imageDuration, ease: hop}"
         >
-          <img
-            :src="currentSlide.image"
-            alt=""
+          <SanityFile
+            v-if="currentSlide.showcaseMedia.type === 'video' && currentSlide.showcaseMedia.video?.ref"
+            v-slot="{src}"
+            :asset-id="currentSlide.showcaseMedia.video.ref"
+          >
+            <video
+              :src="src"
+              autoplay
+              muted
+              loop
+              playsinline
+              class="relative w-full h-full object-cover select-none will-change-transform"
+            />
+          </SanityFile>
+          <SanityImage
+            v-else-if="currentSlide.showcaseMedia.image?.ref"
+            :asset-id="currentSlide.showcaseMedia.image.ref"
+            :alt="currentSlide.showcaseMedia.image.alt ?? currentSlide.title"
+            :placeholder="currentSlide.showcaseMedia.image.asset?.metadata?.lqip ?? undefined"
+            auto="format"
+            fit="crop"
             draggable="false"
             class="relative w-full h-full object-cover select-none will-change-transform"
-          >
+          />
         </Motion>
       </AnimatePresence>
 
-      <!--
-        Title in the bottom-left. Each <h1> is absolutely positioned so the
-        outgoing and incoming titles stack in the same spot during the sync
-        crossfade — no layout shift / left-to-right jump. The small
-        delayChildren on `visible` gives the outgoing title a head start
-        on its blur-out so the two reveals don't visually fight.
-      -->
       <AnimatePresence mode="sync">
         <Motion
           :key="currentIndex"
           as="h1"
-          class="font-acorn absolute top-7/10 left-8 md:left-12 lg:left-25 z-2 pointer-events-none uppercase text-left text-[2.25rem] md:text-[4rem] leading-[0.85] max-w-[80%] md:max-w-[40%]"
+          class="font-acorn absolute top-7/10 left-8 md:left-16 z-2 pointer-events-none uppercase text-left text-[2.25rem] md:text-[4rem] leading-[0.85] max-w-[80%] md:max-w-[40%]"
           :class="titleSettled ? 'title-smooth' : 'title-blur'"
           initial="hidden"
           animate="visible"
@@ -192,19 +197,12 @@ const imageVariants = {
         </Motion>
       </AnimatePresence>
 
-      <!--
-        Vertical slide progress bar on the left edge. One segment per slide:
-        past = solid white, current = animates 0→1 over the autoplay window,
-        future = faint track. Keyed on currentIndex so the active fill
-        re-mounts and restarts on every slide change (including manual nav,
-        which keeps the on-screen progress in sync with the autoplay timer).
-      -->
       <div
         class="pointer-events-none absolute right-6 md:right-10 top-1/2 -translate-y-1/2 z-10 flex flex-col gap-2 h-[50vh] w-0.5"
         aria-hidden="true"
       >
         <div
-          v-for="(_, i) in slides"
+          v-for="(_, i) in slideList"
           :key="i"
           class="relative flex-1 w-full bg-white/20 overflow-hidden"
         >
@@ -224,43 +222,34 @@ const imageVariants = {
         </div>
       </div>
 
-      <!--
-        Controls. On desktop they span the full edges; on mobile the
-        original collapses them into a centered pair below the title.
-      -->
       <div
-        class="absolute z-10 flex flex-col gap-8 right-20
+        class="absolute z-10 flex gap-8 right-20
                max-md:top-[65%]  max-md:-translate-y-1/2 max-md:w-1/2 max-sm:justify-center
-               md:top-5/10 max-sm:w-full md:justify-between"
+               md:top-[68%] max-sm:w-full md:justify-between"
       >
         <button
           type="button"
-          class="control-btn"
+          class="control-btn relative flex items-center justify-center cursor-pointer overflow-hidden size-12 md:size-17 text-white border border-white/75 rounded-full transition-colors duration-300 ease-out hover:text-black"
           aria-label="Previous slide"
           @click="go(-1)"
         >
-          <svg xmlns="http://www.w3.org/2000/svg" class="size-4 md:size-8" viewBox="0 0 24 24">
-            <g fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="1.5"><path d="M4 6v12"/><path stroke-linejoin="round" d="M8 12h12m-8-4s-4 2.946-4 4s4 4 4 4"/>
-            </g>
+          <svg xmlns="http://www.w3.org/2000/svg" class="size-4 md:size-6 relative z-1" viewBox="0 0 24 24">
+            <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M5.5 12.002H19m-8 6s-6-4.419-6-6s6-6 6-6"/>
           </svg>
         </button>
         <button
           type="button"
-          class="control-btn"
+          class="control-btn relative flex items-center justify-center cursor-pointer overflow-hidden size-12 md:size-17 text-white border border-white/75 rounded-full transition-colors duration-300 ease-out hover:text-black"
           aria-label="Next slide"
           @click="go(1)"
         >
-          <svg xmlns="http://www.w3.org/2000/svg" class="size-4 md:size-8" viewBox="0 0 24 24">
-            <g fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="1.5">
-              <path d="M20 18V6"/><path stroke-linejoin="round" d="M16 12H4m8-4s4 2.946 4 4s-4 4-4 4"/>
-            </g>
+          <svg xmlns="http://www.w3.org/2000/svg" class="size-4 md:size-6 relative z-1" viewBox="0 0 24 24">
+            <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M18.5 12H5m8 6s6-4.419 6-6s-6-6-6-6"/>
           </svg>
         </button>
       </div>
     </section>
 
-    <!-- SVG matrix filter that stylises the blur (sharper "ink" look than
-         a plain CSS blur). Identical to the reference. -->
     <svg
       viewBox="0 0 0 0"
       aria-hidden="true"
@@ -280,18 +269,25 @@ const imageVariants = {
 </template>
 
 <style scoped>
-/* During the reveal: the SVG matrix filter thresholds alpha to give the
-   title an inky, gooey bleed as each word un-blurs. The downside is it
-   leaves hard, aliased edges, so we only keep it on while animating. */
+.control-btn::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: #fff;
+  z-index: 0;
+  clip-path: polygon(0 0, 0 0, 0 0);
+  transition: clip-path 450ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.control-btn:hover::before {
+  clip-path: polygon(0 0, 200% 0, 0 200%);
+}
+
 .title-blur {
   filter: url(#blur-matrix) blur(0.25px);
   -webkit-filter: url(#blur-matrix) blur(0.25px);
 }
 
-/* After the reveal: drop the SVG filter so the settled text falls back to
-   the browser's normal anti-aliasing — smooth edges. The short opacity
-   transition hides the one-frame swap between filtered/unfiltered rendering
-   so there's no visible "pop". */
 .title-smooth {
   filter: none;
   -webkit-filter: none;

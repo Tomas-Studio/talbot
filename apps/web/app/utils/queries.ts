@@ -30,6 +30,9 @@ const mediaFields = /* groq */ `
   ...,
   image {
     ${imageFields}
+  },
+  video {
+    "ref": asset._ref
   }
 `
 
