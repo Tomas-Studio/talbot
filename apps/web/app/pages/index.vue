@@ -4,15 +4,9 @@ import {AnimatePresence, Motion} from 'motion-v'
 const appconfig = useAppConfig()
 useSeoMeta({title: `${appconfig.title}`, titleTemplate: null})
 
-/**
- * Project categories drive the homepage carousel. Each category's
- * `showcaseMedia` is either an image (rendered via <SanityImage> with an
- * LQIP blur-up placeholder) or a video file (rendered via <SanityFile>).
- * Ordered by the `order` field in the studio.
- */
 const {data: slides} = await useSanityLiveQuery(categoriesQuery)
 
-console.log(slides.value)
+// console.log(slides.value)
 
 const currentIndex = ref(0)
 const direction = ref<1 | -1>(1)
@@ -52,7 +46,7 @@ function updateOffset() {
  * Doesn't pause on hover — the carousel keeps moving while the cursor sits
  * over it. The `isAnimating` guard prevents a tick from firing mid-transition.
  */
-const autoplayMs = 7000
+const autoplayMs = 10000
 let autoplayTimer: ReturnType<typeof setInterval> | null = null
 
 function startAutoplay() {
@@ -116,7 +110,7 @@ const imageVariants = {
 </script>
 
 <template>
-  <div class="bg-black text-white">
+  <div class="relative bg-black text-white overflow-hidden">
     <section class="relative w-full h-svh overflow-hidden">
 
       <AnimatePresence
@@ -167,7 +161,7 @@ const imageVariants = {
         <Motion
           :key="currentIndex"
           as="h1"
-          class="font-acorn absolute top-7/10 left-8 md:left-16 z-2 pointer-events-none uppercase text-left text-[2.25rem] md:text-[4rem] leading-[0.85] max-w-[80%] md:max-w-[40%]"
+          class="font-sigmar absolute top-7/10 left-8 md:left-16 z-2 pointer-events-none uppercase text-left text-[2.25rem] md:text-[4rem] leading-[0.85] max-w-[80%] md:max-w-[40%]"
           :class="titleSettled ? 'title-smooth' : 'title-blur'"
           initial="hidden"
           animate="visible"
@@ -198,7 +192,7 @@ const imageVariants = {
       </AnimatePresence>
 
       <div
-        class="pointer-events-none absolute right-6 md:right-10 top-1/2 -translate-y-1/2 z-10 flex flex-col gap-2 h-[50vh] w-0.5"
+        class="pointer-events-none absolute right-6 md:right-16 top-1/5 z-10 flex flex-col gap-2 h-[40vh] w-0.5"
         aria-hidden="true"
       >
         <div
@@ -223,7 +217,7 @@ const imageVariants = {
       </div>
 
       <div
-        class="absolute z-10 flex gap-8 right-20
+        class="absolute z-10 flex gap-8 right-16
                max-md:top-[65%]  max-md:-translate-y-1/2 max-md:w-1/2 max-sm:justify-center
                md:top-[68%] max-sm:w-full md:justify-between"
       >
@@ -253,7 +247,7 @@ const imageVariants = {
     <svg
       viewBox="0 0 0 0"
       aria-hidden="true"
-      class="absolute -z-10 opacity-0"
+      class="absolute top-0 left-0 h-0 w-0 overflow-hidden -z-10 opacity-0"
     >
       <defs>
         <filter id="blur-matrix">
