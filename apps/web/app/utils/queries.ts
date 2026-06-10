@@ -84,6 +84,27 @@ export const categoriesQuery = defineQuery(
   }`,
 )
 
+export const categoryTitlesQuery = defineQuery(
+  `*[_type == "projectCategory"] | order(order asc) {
+    title,
+    "slug": slug.current,
+  }`,
+)
+
+export const projectsByCategoryQuery = defineQuery(
+  `*[_type == "project" && category->slug.current == $category] | order(year desc) {
+    _id,
+    title,
+    "slug": slug.current,
+    thumbnail {
+      ${imageFields}
+    },
+    year,
+    client,
+    "category": category->{_id, title, "slug": slug.current},
+  }`,
+)
+
 export const categoryQuery = defineQuery(
   `*[_type == "projectCategory" && slug.current == $slug][0] {
     _id,
@@ -105,4 +126,5 @@ export const categoryQuery = defineQuery(
     },
   }`,
 )
+
 

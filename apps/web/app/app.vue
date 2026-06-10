@@ -2,8 +2,8 @@
 const appconfig = useAppConfig()
 
 useHead({
-  htmlAttrs: { lang: 'en', class: 'font-sans scroll-smooth' },
-  bodyAttrs: { class: 'antialiased font-sans scroll-smooth' },
+  htmlAttrs: { lang: 'en', class: 'font-sans scroll-smooth text-neutral-900' },
+  bodyAttrs: { class: 'antialiased font-sans scroll-smooth text-neutral-900' },
   link: [{ rel: 'icon', type: 'image/png', href: '/th-favicon-32.png' }],
 })
 

@@ -1,0 +1,5 @@
+export const HOME = 'index'
+export const PROJECTS = 'projects'
+export const ABOUT = 'about'
+export const COOKIES = 'cookies'
+export const PRIVACY_POLICY = 'privacy-policy'

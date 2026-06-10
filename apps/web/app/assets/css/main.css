@@ -3,18 +3,14 @@
 @custom-variant dark (&:is(.dark *));
 
 @layer components {
-  /* .control-btn {
-    @apply flex items-center justify-center cursor-pointer
-         p-4 text-white bg-transparent
-         border border-dashed border-white/75 rounded-xs 
-         transition-colors duration-200 ease-in-out
-         hover:bg-white hover:text-black overflow-hidden;
-  } */
+  
 }
 
 @theme inline {
-  --font-youth: "Youth", sans-serif;
-  --font-sigmar: "Sigmar", sans-serif;
   --font-acorn: "Acorn", sans-serif;
-  --font-sans: "Gabarito", sans-serif;
+  --font-hatton: "PP Hatton", serif;
+  --font-mono: "Graebenbach Mono", monospace;
+  /* --font-sans: "Plus Jakarta Sans", sans-serif; */
+  /* --font-sans: "Figtree", sans-serif; */
+  --font-sans: "Apercu Pro", sans-serif;
 }

@@ -1,30 +1,54 @@
 <script setup lang="ts">
+import { motion } from 'motion-v'
 
+const logoHovered = ref(false)
 </script>
 
 <template>
-  <main class="relative grid grid-rows-[1fr_auto] min-h-dvh">
-    <header class="h-12 sm:h-18 fixed top-0 left-0 z-10 w-full px-4 sm:px-8 md:px-16">
+  <main class="relative grid grid-rows-[1fr] min-h-dvh selection:bg-white selection:text-neutral-900">
+    <header class="h-14 sm:h-22 fixed top-0 left-0 z-10 w-full px-4 sm:px-8 md:px-12">
       <nav class="flex h-full justify-between items-center">
-        <NuxtLink to="/" class="flex flex-col select-none uppercase tracking-tight text-[15px] leading-none font-medium text-white">
+        <NuxtLink
+          :to="{ name: HOME }"
+          class="flex flex-col select-none text-[15px] leading-none font-bold"
+          :class="isDarkBg() ? 'text-white' : 'text-black'"
+          @mouseenter="logoHovered = true"
+          @mouseleave="logoHovered = false"
+        >
           <span class="">Talbot</span>
-          <span>Studio</span>
+          <span class="flex">
+            <motion.span
+              class="inline-block"
+              :animate="logoHovered ? { x: [0, 6, 0] } : { x: 0 }"
+              :transition="{ duration: 0.6, ease: 'easeInOut' }"
+            >—</motion.span>
+            <span>&nbsp;Studio</span>
+          </span>
         </NuxtLink>
-        <div class="flex gap-4 font-medium tracking-tight uppercase">
-          <NuxtLink to="/" class="text-white">
-            <SharedAnimatedText word="Home" class="text-sm h-4.5 leading-4.5 px-1.5" />
+        <div class="flex gap-0.5 font-bold" :class="isDarkBg() ? 'text-white' : 'text-black'">
+          <NuxtLink v-if="useRoute().name != ABOUT" :to="{ name: ABOUT }">
+            <SharedAnimatedText2 word="About" class="text-sm" />
           </NuxtLink>
-          <NuxtLink to="/" class="text-white">
-            <SharedAnimatedText word="Projects" class="text-sm h-4.5 leading-4.5 px-1.5" />
-          </NuxtLink>
-          <NuxtLink to="/" class="text-white">
-            <SharedAnimatedText word="About" class="text-sm h-4.5 leading-4.5 px-1.5" />
+          <NuxtLink v-else :to="{ name: HOME }">
+            <SharedAnimatedText2 word="Home" class="text-sm" />
           </NuxtLink>
         </div>
       </nav>
     </header>
     <slot/>
-    <footer/>
+
+    <div
+      class="fixed bottom-4 left-2 font-mono uppercase text-[8px] mix-blend-difference tracking-wider [writing-mode:vertical-rl]"
+      :class="isDarkBg() ? 'text-white' : 'text-black'"
+    >
+      Made with love&nbsp;♥
+    </div>
+    <div
+      class="fixed bottom-1/3 right-2 font-mono uppercase text-[8px] mix-blend-difference tracking-wider [writing-mode:vertical-rl]"
+      :class="isDarkBg() ? 'text-white' : 'text-black'"
+    >
+      By Tomas Studio
+    </div>
   </main>
 </template>
 

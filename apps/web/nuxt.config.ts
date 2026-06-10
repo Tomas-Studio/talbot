@@ -54,6 +54,10 @@ export default defineNuxtConfig({
     },
   },
 
+  routeRules: {
+    // '/projects': { redirect: '/projects?category=web-design' },
+  },
+
   fonts: {
     families: [
       {
@@ -62,26 +66,38 @@ export default defineNuxtConfig({
         weights: [300, 400, 500, 600, 700, 800],
       },
       {
-        name: 'Gabarito',
+        name: 'Plus Jakarta Sans',
         provider: 'google',
-        weight: '400 800',
+        weights: [300, 400, 500, 600, 700, 800],
       },
       {
-        name: 'Sigmar',
+        name: 'Figtree',
         provider: 'google',
+        weights: [300, 400, 500, 600, 700, 800],
+      },
+      {
+        name: 'Apercu Pro',
+        src: ['/fonts/ApercuPro-Regular.woff2', '/fonts/ApercuPro-Medium.woff2'],
+        weight: [400, 500],
+        style: 'normal',
+      },
+      {
+        name: 'Graebenbach Mono',
+        src: ['/fonts/GraebenbachMono.woff2'],
         weight: 400,
-      },
-      {
-        name: 'Youth',
-        src: ['/fonts/Youth-Bold.otf', '/fonts/Youth-Black.otf'],
-        weight: [700, 900],
         style: 'normal',
       },
       {
-        name: 'Acorn',
-        src: ['/fonts/acorn.woff'],
-        weight: 600,
+        name: 'PP Hatton',
+        src: ['/fonts/PPHatton.woff'],
+        weight: 300,
         style: 'normal',
+      },
+      {
+        name: 'PP Hatton Italic',
+        src: ['/fonts/PPHattonItalic.woff'],
+        weight: 300,
+        style: 'italic',
       },
     ]
   }
