@@ -21,19 +21,16 @@ export const project = defineType({
       validation: (rule) => rule.required(),
     }),
     defineField({
-      name: 'thumbnail',
-      title: 'Thumbnail',
-      type: 'image',
-      options: {hotspot: true},
+      name: 'synopsis',
+      title: 'Synopsis',
+      type: 'text',
+      rows: 4,
+    }),
+    defineField({
+      name: 'cover',
+      title: 'Cover',
+      type: 'media',
       validation: (rule) => rule.required(),
-      fields: [
-        defineField({
-          name: 'alt',
-          title: 'Alt Text',
-          type: 'string',
-          validation: (rule) => rule.required().error('Alt text is required for accessibility'),
-        }),
-      ],
     }),
     defineField({
       name: 'year',
@@ -55,10 +52,45 @@ export const project = defineType({
       validation: (rule) => rule.required(),
     }),
     defineField({
-      name: 'description',
-      title: 'Description',
-      type: 'text',
-      rows: 4,
+      name: 'tags',
+      title: 'Tags',
+      type: 'array',
+      of: [{type: 'string'}],
+      options: {layout: 'tags'},
+    }),
+    defineField({
+      name: 'media',
+      title: 'Media',
+      type: 'array',
+      of: [{type: 'media'}],
+    }),
+    defineField({
+      name: 'team',
+      title: 'Team',
+      type: 'array',
+      of: [
+        defineField({
+          name: 'member',
+          title: 'Member',
+          type: 'object',
+          fields: [
+            defineField({
+              name: 'name',
+              title: 'Name',
+              type: 'string',
+              validation: (rule) => rule.required(),
+            }),
+            defineField({
+              name: 'role',
+              title: 'Role',
+              type: 'string',
+            }),
+          ],
+          preview: {
+            select: {title: 'name', subtitle: 'role'},
+          },
+        }),
+      ],
     }),
     defineField({
       name: 'projectUrl',
@@ -85,7 +117,7 @@ export const project = defineType({
       title: 'title',
       year: 'year',
       client: 'client',
-      media: 'thumbnail',
+      media: 'cover.image',
     },
     prepare({title, year, client, media}) {
       return {
