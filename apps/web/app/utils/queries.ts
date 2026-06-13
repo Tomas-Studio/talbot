@@ -31,8 +31,8 @@ const mediaFields = /* groq */ `
   }
 `
 
-export const siteSettingsQuery = defineQuery(
-  `*[_type == "siteSettings"][0]`,
+export const aboutQuery = defineQuery(
+  `*[_type == "about"][0]`,
 )
 
 export const projectsQuery = defineQuery(

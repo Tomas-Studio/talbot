@@ -8,9 +8,9 @@ useHead({
   link: [{ rel: 'icon', type: 'image/png', href: '/th-favicon-32.png' }],
 })
 
-const { data } = await useSanityLiveQuery(siteSettingsQuery)
+const { data } = await useSanityLiveQuery(aboutQuery)
 
-const newAppConfig = { title: data.value?.siteTitle || appconfig.title, description: data.value?.aboutText || appconfig.description }
+const newAppConfig = { title: data.value?.siteTitle || appconfig.title, description: data.value?.intro || appconfig.description }
 
 updateAppConfig(newAppConfig)
 

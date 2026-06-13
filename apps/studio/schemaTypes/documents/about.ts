@@ -11,6 +11,8 @@ export const about = defineType({
     {name: 'story', title: 'Story'},
     {name: 'expertise', title: 'Expertise'},
     {name: 'experience', title: 'Experience'},
+    {name: 'contact', title: 'Contact'},
+    {name: 'site', title: 'Site'},
     {name: 'seo', title: 'SEO'},
   ],
   fields: [
@@ -154,6 +156,66 @@ export const about = defineType({
       description: 'Downloadable resume file',
       type: 'file',
       group: 'experience',
+    }),
+    defineField({
+      name: 'email',
+      title: 'Email',
+      type: 'string',
+      group: 'contact',
+      validation: (rule) => rule.email(),
+    }),
+    defineField({
+      name: 'socialLinks',
+      title: 'Social Links',
+      type: 'array',
+      group: 'contact',
+      of: [
+        defineArrayMember({
+          type: 'object',
+          name: 'socialLink',
+          fields: [
+            defineField({
+              name: 'platform',
+              title: 'Platform',
+              type: 'string',
+              options: {
+                list: [
+                  {title: 'Instagram', value: 'instagram'},
+                  {title: 'Behance', value: 'behance'},
+                  {title: 'Dribbble', value: 'dribbble'},
+                  {title: 'LinkedIn', value: 'linkedin'},
+                  {title: 'Twitter / X', value: 'twitter'},
+                  {title: 'GitHub', value: 'github'},
+                ],
+              },
+              validation: (rule) => rule.required(),
+            }),
+            defineField({
+              name: 'url',
+              title: 'URL',
+              type: 'url',
+              validation: (rule) => rule.required(),
+            }),
+          ],
+          preview: {
+            select: {title: 'platform', subtitle: 'url'},
+          },
+        }),
+      ],
+    }),
+    defineField({
+      name: 'siteTitle',
+      title: 'Site Title',
+      description: 'Used for the browser tab title and metadata',
+      type: 'string',
+      group: 'site',
+      validation: (rule) => rule.required(),
+    }),
+    defineField({
+      name: 'footerText',
+      title: 'Footer Text',
+      type: 'string',
+      group: 'site',
     }),
     defineField({
       name: 'seo',
