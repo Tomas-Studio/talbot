@@ -3,12 +3,13 @@
 @custom-variant dark (&:is(.dark *));
 
 @layer components {
-  
+
 }
 
 @theme inline {
   --font-acorn: "Acorn", sans-serif;
   --font-hatton: "PP Hatton", serif;
+  --font-hatton-italic: "PP Hatton Italic", serif;
   --font-mono: "Graebenbach Mono", monospace;
   /* --font-sans: "Plus Jakarta Sans", sans-serif; */
   /* --font-sans: "Figtree", sans-serif; */

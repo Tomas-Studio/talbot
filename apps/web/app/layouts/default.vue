@@ -5,12 +5,12 @@ const logoHovered = ref(false)
 </script>
 
 <template>
-  <main class="relative grid grid-rows-[1fr] min-h-dvh selection:bg-white selection:text-neutral-900">
-    <header class="h-14 sm:h-22 fixed top-0 left-0 z-10 w-full px-4 sm:px-8 md:px-12">
+  <main class="relative grid grid-rows-[1fr] min-h-dvh selection:bg-neutral-300 selection:text-neutral-900">
+    <header class="h-14 sm:h-22 fixed top-0 left-0 z-50 w-full px-4 sm:px-8 md:px-12">
       <nav class="flex h-full justify-between items-center">
         <NuxtLink
           :to="{ name: HOME }"
-          class="flex flex-col select-none text-[15px] leading-none font-bold"
+          class="flex flex-col select-none text-[15px] leading-none font-bold mix-blend-difference"
           :class="isDarkBg() ? 'text-white' : 'text-black'"
           @mouseenter="logoHovered = true"
           @mouseleave="logoHovered = false"
@@ -25,7 +25,7 @@ const logoHovered = ref(false)
             <span>&nbsp;Studio</span>
           </span>
         </NuxtLink>
-        <div class="flex gap-0.5 font-bold" :class="isDarkBg() ? 'text-white' : 'text-black'">
+        <div class="flex gap-0.5 font-bold mix-blend-difference" :class="isDarkBg() ? 'text-white' : 'text-black'">
           <NuxtLink v-if="useRoute().name != ABOUT" :to="{ name: ABOUT }">
             <SharedAnimatedText2 word="About" class="text-sm" />
           </NuxtLink>

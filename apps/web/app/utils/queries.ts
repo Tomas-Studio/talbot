@@ -7,11 +7,6 @@ import {defineQuery} from 'groq'
  * place avoids that footgun and makes the data layer easy to audit.
  */
 
-/**
- * Image projection that resolves the asset and pulls its metadata —
- * `blurHash` and `lqip` (base64 placeholder) for blur-up loading, plus
- * `dimensions` for aspect-ratio sizing. `_ref` is kept for @sanity/image-url.
- */
 const imageFields = /* groq */ `
   ...,
   alt,
@@ -45,14 +40,16 @@ export const projectsQuery = defineQuery(
     _id,
     title,
     "slug": slug.current,
-    thumbnail {
-      ${imageFields}
+    cover {
+      ${mediaFields}
     },
     year,
     client,
     "category": category->{_id, title, "slug": slug.current},
-    description,
-    projectUrl,
+    synopsis,
+    services,
+    featured,
+    liveUrl,
   }`,
 )
 
@@ -61,14 +58,51 @@ export const projectQuery = defineQuery(
     _id,
     title,
     "slug": slug.current,
-    thumbnail {
-      ${imageFields}
+    cover {
+      ${mediaFields}
     },
     year,
+    duration,
     client,
+    role,
     "category": category->{_id, title, "slug": slug.current},
-    description,
-    projectUrl,
+    synopsis,
+    services,
+    themeColor,
+    challenge,
+    approach,
+    result,
+    highlight,
+    gallery[] {
+      ${mediaFields}
+    },
+    testimonial,
+    awards,
+    team[] {
+      name,
+      role,
+    },
+    liveUrl,
+    "relatedProjects": coalesce(
+      relatedProjects[]->{
+        _id,
+        title,
+        "slug": slug.current,
+        cover {
+          ${mediaFields}
+        },
+        year,
+        client,
+      },
+      []
+    ),
+    seo {
+      metaTitle,
+      metaDescription,
+      ogImage {
+        ${imageFields}
+      },
+    },
   }`,
 )
 
@@ -96,12 +130,33 @@ export const projectsByCategoryQuery = defineQuery(
     _id,
     title,
     "slug": slug.current,
-    thumbnail {
-      ${imageFields}
+    cover {
+      ${mediaFields}
     },
     year,
     client,
+    services,
     "category": category->{_id, title, "slug": slug.current},
+  }`,
+)
+
+export const categoriesWithProjectsQuery = defineQuery(
+  `*[_type == "projectCategory"] | order(order asc) {
+    _id,
+    title,
+    "slug": slug.current,
+    order,
+    "projects": *[_type == "project" && category._ref == ^._id] | order(year desc) {
+      _id,
+      title,
+      "slug": slug.current,
+      cover {
+        ${mediaFields}
+      },
+      year,
+      client,
+      services,
+    },
   }`,
 )
 
@@ -118,8 +173,8 @@ export const categoryQuery = defineQuery(
       _id,
       title,
       "slug": slug.current,
-      thumbnail {
-        ${imageFields}
+      cover {
+        ${mediaFields}
       },
       year,
       client,

@@ -14,8 +14,15 @@ export default defineNuxtConfig({
     '@nuxtjs/sanity',
   ],
   css: ["./app/assets/css/main.css"],
+
   vite: {
     plugins: [tailwindcss()],
+    optimizeDeps: {
+      include: [
+        '@sanity/client',
+        'groq',
+      ]
+    }
   },
 
   image: {
